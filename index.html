@@ -1,0 +1,720 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Hira Davizan'a Özel</title>
+
+    <style>
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: #1700b8;
+            font-family: Arial, sans-serif;
+        }
+
+
+        /* =====================================================
+           ANA SAHNE
+        ===================================================== */
+
+        .scene {
+            position: fixed;
+
+            inset: 0;
+
+            width: 100vw;
+            height: 100dvh;
+
+            overflow: hidden;
+
+            background: #1700b8;
+
+            perspective: 1600px;
+        }
+
+
+        /* =====================================================
+           TASARIM ALANI
+
+           Orijinal görselin oranı:
+           1650 / 930
+        ===================================================== */
+
+        .design {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: min(100vw, calc(100dvh * 1.7741935));
+            height: min(100dvh, calc(100vw * .5636363));
+
+            transform:
+                translate(-50%, -50%);
+
+            transform-origin: center center;
+        }
+
+
+        /* =====================================================
+           ANA GÖRSEL
+
+           Senin gönderdiğin 2. görsel
+        ===================================================== */
+
+        .home-image {
+            position: absolute;
+
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            object-fit: fill;
+
+            z-index: 1;
+
+            transition:
+                transform 1s cubic-bezier(.2,.8,.2,1),
+                filter 1s ease;
+        }
+
+
+        /* =====================================================
+           ZARF ANİMASYON ALANI
+
+           Orijinal 1650x930 görselde zarf:
+
+           X ≈ 585
+           Y ≈ 274
+           W ≈ 478
+           H ≈ 318
+        ===================================================== */
+
+        .envelope {
+            position: absolute;
+
+            left: 35.45%;
+            top: 29.45%;
+
+            width: 28.97%;
+            height: 34.2%;
+
+            z-index: 5;
+
+            pointer-events: none;
+
+            transition:
+                transform 1s cubic-bezier(.2,.8,.2,1),
+                opacity .7s ease;
+        }
+
+
+        /*
+           Gerçek görselden zarfı kesiyoruz.
+        */
+
+        .envelope-image {
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            object-position: center;
+
+            opacity: 0;
+
+            pointer-events: none;
+        }
+
+
+        /* =====================================================
+           ZARF KAPAĞI
+        ===================================================== */
+
+        .flap {
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 50%;
+
+            transform-origin: top center;
+
+            transform:
+                rotateX(0deg);
+
+            transform-style: preserve-3d;
+
+            transition:
+                transform 1.05s cubic-bezier(.15,.75,.25,1);
+
+            z-index: 10;
+        }
+
+
+        /* =====================================================
+           AÇ BUTONU
+
+           Orijinal görsel:
+           X ≈ 610
+           Y ≈ 674
+           W ≈ 428
+           H ≈ 110
+        ===================================================== */
+
+        .open-button {
+            position: absolute;
+
+            left: 36.97%;
+            top: 72.47%;
+
+            width: 25.94%;
+            height: 11.83%;
+
+            transform: translate(-50%, -50%);
+
+            border: none;
+            outline: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            z-index: 50;
+
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        .open-button:focus {
+            outline: none;
+        }
+
+
+        /* =====================================================
+           MEKTUP
+        ===================================================== */
+
+        .letter {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            /*
+               Orijinal mektup görseli yaklaşık 523x739
+            */
+
+            width: min(
+                523px,
+                82vw,
+                calc(100dvh * .708)
+            );
+
+            aspect-ratio: 523 / 739;
+
+            transform:
+                translate(-50%, 65%)
+                scale(.72);
+
+            opacity: 0;
+
+            z-index: 100;
+
+            pointer-events: none;
+
+            transform-origin: center bottom;
+
+            transition:
+                transform 1.15s cubic-bezier(.12,.78,.22,1),
+                opacity .65s ease;
+        }
+
+
+        .letter img {
+            display: block;
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+
+            filter:
+                drop-shadow(
+                    0 28px 45px rgba(0,0,0,.42)
+                );
+        }
+
+
+        /* =====================================================
+           KAPAT BUTONU
+
+           Mektup görselinin üzerindeki KAPAT butonuna
+           tıklama alanı.
+        ===================================================== */
+
+        .close-button {
+            position: absolute;
+
+            left: 50%;
+            bottom: 5.5%;
+
+            width: 37%;
+            height: 9%;
+
+            transform: translateX(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            z-index: 20;
+
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        /* =====================================================
+           AÇILMIŞ DURUM
+        ===================================================== */
+
+        .scene.opened .home-image {
+
+            transform: scale(1.025);
+
+            filter: brightness(.72);
+        }
+
+
+        .scene.opened .flap {
+
+            transform:
+                perspective(1000px)
+                rotateX(180deg);
+        }
+
+
+        .scene.opened .envelope {
+
+            opacity: .25;
+
+            transform:
+                translateY(-5%)
+                scale(.92);
+        }
+
+
+        .scene.opened .letter {
+
+            opacity: 1;
+
+            transform:
+                translate(-50%, -50%)
+                scale(1);
+
+            pointer-events: auto;
+        }
+
+
+        /* =====================================================
+           KAPANIŞ
+        ===================================================== */
+
+        .scene.closing .letter {
+
+            opacity: 0;
+
+            transform:
+                translate(-50%, 65%)
+                scale(.72);
+        }
+
+
+        /* =====================================================
+           TELEFON
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            /*
+               Telefonda tasarım alanı genişliğe göre
+               hesaplanıyor. Oran kesinlikle bozulmuyor.
+            */
+
+            .design {
+
+                width: 100vw;
+
+                height: calc(100vw * .5636363);
+            }
+
+
+            /*
+               Telefon çok uzunsa tasarımın yukarıda
+               küçücük kalmasını önlüyoruz.
+            */
+
+            .design {
+                max-height: 100dvh;
+                max-width: calc(100dvh * 1.7741935);
+            }
+
+
+            /*
+               Mektup telefonda ekranı kaplayacak
+               ama kenarlardan taşmayacak.
+            */
+
+            .letter {
+
+                width: min(
+                    92vw,
+                    calc(100dvh * .70)
+                );
+
+                max-height: 88dvh;
+            }
+
+
+            /*
+               Aç butonunun dokunma alanını
+               biraz büyütüyoruz.
+            */
+
+            .open-button {
+
+                width: 30%;
+
+                height: 14%;
+            }
+
+
+            /*
+               Kapat butonu da mobilde daha rahat.
+            */
+
+            .close-button {
+
+                width: 43%;
+
+                height: 10%;
+            }
+        }
+
+
+        /* =====================================================
+           ÇOK KÜÇÜK TELEFONLAR
+        ===================================================== */
+
+        @media (max-width: 400px) {
+
+            .letter {
+
+                width: 94vw;
+            }
+
+            .open-button {
+
+                width: 34%;
+
+                height: 15%;
+            }
+
+            .close-button {
+
+                width: 46%;
+
+                height: 11%;
+            }
+        }
+
+
+        /* =====================================================
+           YATAY TELEFON
+        ===================================================== */
+
+        @media (
+            max-width: 900px
+        ) and (
+            orientation: landscape
+        ) {
+
+            .letter {
+
+                width: min(
+                    55vw,
+                    75dvh * .708
+                );
+            }
+        }
+
+
+        /* =====================================================
+           TABLET
+        ===================================================== */
+
+        @media (
+            min-width: 701px
+        ) and (
+            max-width: 1200px
+        ) {
+
+            .letter {
+
+                width: min(
+                    523px,
+                    72vw,
+                    calc(100dvh * .70)
+                );
+            }
+        }
+
+
+        /* =====================================================
+           HAREKET AZALTMA
+        ===================================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+
+                transition-duration: .01ms !important;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div
+    class="scene"
+    id="scene"
+>
+
+
+    <!-- =================================================
+         TASARIM ALANI
+    ================================================== -->
+
+    <div class="design">
+
+
+        <!-- =============================================
+             SENİN 2. GÖRSELİN
+        ============================================== -->
+
+        <img
+            class="home-image"
+            src="./ana-ekran.png"
+            alt=""
+        >
+
+
+        <!-- =============================================
+             ZARF
+        ============================================== -->
+
+        <div
+            class="envelope"
+            id="envelope"
+        >
+
+            <div class="flap"></div>
+
+        </div>
+
+
+        <!-- =============================================
+             AÇ
+        ============================================== -->
+
+        <button
+            class="open-button"
+            id="openButton"
+            aria-label="Mektubu aç"
+        ></button>
+
+
+    </div>
+
+
+    <!-- =================================================
+         MEKTUP
+    ================================================== -->
+
+    <div
+        class="letter"
+        id="letter"
+    >
+
+        <img
+            src="./mektup.png"
+            alt="Hira'ya mektup"
+        >
+
+
+        <!-- Görseldeki KAPAT butonunun tıklama alanı -->
+
+        <button
+            class="close-button"
+            id="closeButton"
+            aria-label="Mektubu kapat"
+        ></button>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+const scene =
+    document.getElementById("scene");
+
+const openButton =
+    document.getElementById("openButton");
+
+const closeButton =
+    document.getElementById("closeButton");
+
+
+/* =====================================================
+   AÇ
+===================================================== */
+
+openButton.addEventListener(
+    "click",
+    function () {
+
+        if (
+            scene.classList.contains("opened")
+        ) {
+            return;
+        }
+
+        scene.classList.remove("closing");
+
+        scene.classList.add("opened");
+
+    }
+);
+
+
+/* =====================================================
+   KAPAT
+===================================================== */
+
+closeButton.addEventListener(
+    "click",
+    function () {
+
+        if (
+            !scene.classList.contains("opened")
+        ) {
+            return;
+        }
+
+        scene.classList.add("closing");
+
+
+        /*
+           Mektup aşağı doğru geri gider.
+        */
+
+        setTimeout(
+            function () {
+
+                scene.classList.remove("opened");
+
+            },
+            700
+        );
+
+
+        /*
+           Animasyon tamamen bitince
+           kapanış sınıfını temizle.
+        */
+
+        setTimeout(
+            function () {
+
+                scene.classList.remove("closing");
+
+            },
+            1500
+        );
+
+    }
+);
+
+
+/* =====================================================
+   ESC
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Escape" &&
+            scene.classList.contains("opened")
+        ) {
+
+            closeButton.click();
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>
